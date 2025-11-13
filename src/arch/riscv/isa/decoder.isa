@@ -2040,11 +2040,23 @@ decode QUADRANT {
         }}, IsDirectControl, IsUncondControl);
 
         0x1c: decode FUNCT3 {
-            format LoadH {
-                0x04:  decode HFUNCT2{
+            0x04:  decode HFUNCT2{
+                format LoadH {
                     0x643: hlvx_hu({{
                         Rd = Mem_uh;
                     }},inst_flags = IsHInst);
+                }
+                format SystemOp {
+                    default: decode FUNCT7 {
+                        0x43: decode TAGIMM4 {
+                            0x0: gentag({{Rd = 0x1ULL << 60;}});
+                            default: addtag({{Rd = ((Rs1 >> 60) + TAGIMM4) << 60 }});
+                        }
+                        0x41: decode ZERO {
+                            0x0: settag({{Rd = Rd;}});
+                            default: setinvtag({{Rd = Rd;}});
+                        }
+                    }
                 }
             }
             format SystemOp {

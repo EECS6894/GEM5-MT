@@ -772,7 +772,10 @@ BitUnion64(STATUS)
 EndBitUnion(STATUS)
 
 BitUnion64(HSTATUS)
-    Bitfield<63,34> pad4;
+    Bitfield<63,52> pad5;
+    Bitfield<51,50> humt;
+    Bitfield<49,48> hupmm;
+    Bitfield<47,34> pad4;
     Bitfield<33,32> vsxl;
     Bitfield<31,23> pad3;
     Bitfield<22> vtsr;
@@ -1000,6 +1003,9 @@ CSR_STRUCT_START(hstatus)
   uint64_t vtsr  : 1;
   uint64_t pad3  : 9;
   uint64_t vsxl  : 2;
+  uint64_t pad4  : 14;
+  uint64_t hupmm : 2;
+  uint64_t humt  : 2;
 CSR_STRUCT_END(hstatus)
 
 CSR_STRUCT_START(hie)
@@ -1039,10 +1045,47 @@ CSR_STRUCT_START(henvcfg)
   uint64_t cbie   : 2;
   uint64_t cbcfe  : 1;
   uint64_t cbze   : 1;
-  uint64_t pad1   :54;
+  uint64_t pad1   : 24;
+  uint64_t pmm    : 2;
+  uint64_t mt_mode: 2;
+  uint64_t mt_async:1;
+  uint64_t pad2   : 23;
+  uint64_t cde    : 1;
+  uint64_t adue   : 1;
   uint64_t pbmte  : 1;
-  uint64_t vstce  : 1;
+  uint64_t stce  : 1;
 CSR_STRUCT_END(henvcfg)
+
+CSR_STRUCT_START(senvcfg)
+  uint64_t fiom   : 1;
+  uint64_t pad0   : 2;
+  uint64_t sse    : 1;
+  uint64_t cbie   : 2;
+  uint64_t cbcfe  : 1;
+  uint64_t cbze   : 1;
+  uint64_t pad1   : 17;
+  uint64_t pmm    : 2;
+  uint64_t mt_mode: 2;
+  uint64_t mt_async:1;
+CSR_STRUCT_END(senvcfg)
+
+CSR_STRUCT_START(menvcfg)
+  uint64_t fiom   : 1;
+  uint64_t pad0   : 2;
+  uint64_t sse    : 1;
+  uint64_t cbie   : 2;
+  uint64_t cbcfe  : 1;
+  uint64_t cbze   : 1;
+  uint64_t pad1   : 17;
+  uint64_t pmm    : 2;
+  uint64_t mt_mode: 2;
+  uint64_t mt_async:1;
+  uint64_t pad2   : 23;
+  uint64_t cde    : 1;
+  uint64_t adue   : 1;
+  uint64_t pbmte  : 1;
+  uint64_t stce   : 1;
+CSR_STRUCT_END(menvcfg)
 
 CSR_STRUCT_START(hgatp)
   uint64_t ppn    : 44;

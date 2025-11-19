@@ -189,6 +189,7 @@ namespace RiscvISA
     [MISCREG_MEPC]          = "MEPC",
     [MISCREG_MCAUSE]        = "MCAUSE",
     [MISCREG_MTVAL]         = "MTVAL",
+    [MISCREG_MVITT]         = "MVITT",
     [MISCREG_PMPCFG0]       = "PMPCFG0",
     // pmpcfg1 rv32 only
     [MISCREG_PMPCFG2]       = "PMPCFG2",

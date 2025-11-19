@@ -183,6 +183,7 @@ enum MiscRegIndex
     MISCREG_MEPC,
     MISCREG_MCAUSE,
     MISCREG_MTVAL,
+    MISCREG_MVITT,
     MISCREG_PMPCFG0,
     // pmpcfg1 rv32 only
     MISCREG_PMPCFG2,
@@ -498,6 +499,7 @@ enum CSRIndex
     CSR_VSATP       = 0x280,
     CSR_MTINST      = 0x34A,
     CSR_MTVAL2      = 0x34B,
+    CSR_MVITT       = 0x34C,
 };
 
 struct CSRMetadata
@@ -609,6 +611,7 @@ const std::map<int, CSRMetadata> CSRData = {
     {CSR_MEPC, {"mepc", MISCREG_MEPC}},
     {CSR_MCAUSE, {"mcause", MISCREG_MCAUSE}},
     {CSR_MTVAL, {"mtval", MISCREG_MTVAL}},
+    {CSR_MVITT, {"mvitt", MISCREG_MVITT}},
     {CSR_MIP, {"mip", MISCREG_IP}},
     {CSR_PMPCFG0, {"pmpcfg0", MISCREG_PMPCFG0}},
     // pmpcfg1 rv32 only

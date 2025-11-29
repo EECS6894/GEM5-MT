@@ -2046,16 +2046,20 @@ decode QUADRANT {
                         Rd = Mem_uh;
                     }},inst_flags = IsHInst);
                 }
-                format SystemOp {
-                    default: decode FUNCT7 {
-                        0x43: decode TAGIMM4 {
+                default: decode FUNCT7 {
+                    0x43: decode TAGIMM4 {
+                        format SystemOp {
                             0x0: gentag({{Rd = 0x1ULL << 60;}});
                             default: addtag({{Rd = ((Rs1 >> 60) + TAGIMM4) << 60 }});
                         }
-                        0x41: decode ZERO {
-                            0x0: settag({{Rd = Rd;}});
-                            default: setinvtag({{Rd = Rd;}});
-                        }
+                    }
+                    0x41: decode ZERO {
+                    0x0: StoreTag::settag({{
+                            uint8_t tag = (uint8_t)((Rs1 >> 60) & 0xFULL); // get upper 4 bits
+                            Mem_ub = tag + (uint8_t)(Rs2 & 0x0ULL);
+                            DPRINTF(MemTag, "settag: EA=%#lx tag=%u\n", EA, tag);
+                        }}, inst_flags=[IsOper8]);
+                        default: StoreTag::setinvtag({{Rd = Rd; Mem_ub=0;}}, inst_flags=[IsSplitStoreAddr, IsOper8]);
                     }
                 }
             }

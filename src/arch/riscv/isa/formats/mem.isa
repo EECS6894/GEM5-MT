@@ -101,6 +101,7 @@ def template LoadExecute {{
         ExecContext *xc, Trace::InstRecord *traceData) const
     {
         Addr EA;
+        Addr OA;
 
         %(op_decl)s;
         %(op_rd)s;
@@ -127,10 +128,42 @@ def template LoadInitiateAcc {{
         Trace::InstRecord *traceData) const
     {
         Addr EA;
+        Addr OA;
 
         %(op_src_decl)s;
         %(op_rd)s;
         %(ea_code)s;
+
+        uint64_t menvcfg = xc->readMiscReg(MISCREG_MENVCFG);
+        // Check to see if memory tagging mode is enabled
+        if ( (menvcfg >> 34 & 0x3ULL) == 2) {
+            // Compute VITT_EA into VITT
+            uint64_t mvitt_base = xc->readMiscReg(MISCREG_MVITT);
+            Addr VITT_EA = mvitt_base + (((uintptr_t)OA & ~(0xFULL << 60)) >> 5);
+
+            // Compute Tag
+            uint8_t tag = (uint8_t)((OA >> 60) & 0xFULL);
+
+            // Functional read of stored tag
+            uint8_t stored_tag = 0;
+            Fault tf = xc->readMem(VITT_EA, &stored_tag,1, Request::Flags(0), std::vector<bool>());
+            if (tf != NoFault)
+                return tf;
+
+            // Perform a read to obtain the desired tag. TODO: Maybe separate functions
+            // int8_t stored_tag = {};
+            // Fault fault = readMemAtomicLE(xc, traceData, VITT_EA, stored_tag, memAccessFlags);
+
+            // if (fault != NoFault)
+            //     return fault;
+
+            DPRINTF(MemTag, "LoadInitiateAcc: comparing %ux w/ %ux\n", tag, stored_tag);
+            if (tag != stored_tag){
+                DPRINTF(MemTag, "LoadInitiateAcc: %ux != %ux\n", tag, stored_tag);
+                return std::make_shared<MemoryTagFault>(OA);  // Rs1 is the faulting pointer
+            }
+            DPRINTF(MemTag, "LoadInitiateAcc: %ux == %ux\n", tag, stored_tag);
+        }
 
         return initiateMemRead(xc, traceData, EA, Mem, memAccessFlags);
     }
@@ -281,7 +314,7 @@ def template SetTagCompleteAcc {{
     }
 }};
 
-def format Load(memacc_code, ea_code = {{EA = Rs1 + offset;}},
+def format Load(memacc_code, ea_code = {{EA = Rs1 + offset; OA = Rs1;}},
         offset_code={{offset = sext<12>(IMM12);}},
         mem_flags=[], inst_flags=[]) {{
     (header_output, decoder_output, decode_block, exec_output) = \
@@ -309,7 +342,7 @@ def format StoreTag(memacc_code,
         inst_flags, 'Store', exec_template_base='Store')
 }};
 
-def format LoadH(memacc_code, ea_code = {{EA = Rs1;}},
+def format LoadH(memacc_code, ea_code = {{EA = Rs1; OA = Rs1;}},
         offset_code={{offset = 0}},
         mem_flags=[], inst_flags=[]) {{
     (header_output, decoder_output, decode_block, exec_output) = \

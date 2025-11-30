@@ -90,6 +90,9 @@ enum ExceptionCode : uint64_t
     STORE_G_PAGE = 23,
     AMO_G_PAGE = 23,
 
+    // EECS6984
+    MTAG_MISS = 30,
+
     INT_SOFTWARE_USER = 0,
     INT_SOFTWARE_SUPER = 1,
     INT_SOFTWARE_MACHINE = 3,
@@ -292,6 +295,21 @@ class HVFault : public RiscvFault
     HVFault() : RiscvFault("System call", FaultType::OTHERS, VIRTUAL_INST) {}
     void invokeSE(ThreadContext *tc, const StaticInstPtr &inst) override;
 };
+
+class MemoryTagFault : public RiscvFault
+{
+  private:
+    const Addr _addr;
+
+  public:
+    MemoryTagFault(const Addr addr)
+        : RiscvFault("memory_tag_fault", FaultType::OTHERS, MTAG_MISS),
+          _addr(addr)
+    {}
+
+    RegVal trap_value() const override { return _addr; }
+};
+
 } // namespace RiscvISA
 } // namespace gem5
 

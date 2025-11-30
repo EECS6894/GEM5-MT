@@ -68,6 +68,7 @@ decode QUADRANT {
                 Fp2_bits = Mem;
             }}, {{
                 EA = Rp1 + offset;
+                OA = Rp1;
             }});
             0x2: c_lw({{
                 offset = CIMM2<1:1> << 2 |
@@ -77,6 +78,7 @@ decode QUADRANT {
                 Rp2_sd = Mem_sw;
             }}, {{
                 EA = Rp1 + offset;
+                OA = Rp1;
             }});
             0x3: c_ld({{
                 offset = CIMM3 << 3 | CIMM2 << 6;
@@ -84,6 +86,7 @@ decode QUADRANT {
                 Rp2_sd = Mem_sd;
             }}, {{
                 EA = Rp1 + offset;
+                OA = Rp1;
             }});
         }
         0x4: decode CFUNCT6LOW3 {
@@ -94,6 +97,7 @@ decode QUADRANT {
                     Rp2 = Mem_ub;
                 }}, {{
                     EA = (Rp1 + offset);
+                    OA = Rp1;
                 }});
                 0x1: decode CFUNCT1BIT6 {
                     0x0: c_lhu({{
@@ -102,6 +106,7 @@ decode QUADRANT {
                         Rp2 = Mem_uh;
                     }}, {{
                         EA = (Rp1 + offset);
+                        OA = Rp1;
                     }});
                     0x1: c_lh({{
                         offset = CIMM2<0:0> << 1;
@@ -109,6 +114,7 @@ decode QUADRANT {
                         Rp2_sd = Mem_sh;
                     }}, {{
                         EA = (Rp1 + offset);
+                        OA = Rp1;
                     }});
                 }
             }
@@ -358,6 +364,7 @@ decode QUADRANT {
                 Fc1_bits = Mem;
             }}, {{
                 EA = sp + offset;
+                OA = sp;
             }});
             0x2: c_lwsp({{
                 offset = CIMM5<4:2> << 2 |
@@ -371,6 +378,7 @@ decode QUADRANT {
                 Rc1_sd = Mem_sw;
             }}, {{
                 EA = sp + offset;
+                OA = sp;
             }});
             0x3: c_ldsp({{
                 offset = CIMM5<4:3> << 3 |
@@ -384,6 +392,7 @@ decode QUADRANT {
                 Rc1_sd = Mem_sd;
             }}, {{
                 EA = sp + offset;
+                OA = sp;
             }});
         }
         0x4: decode CFUNCT1 {
